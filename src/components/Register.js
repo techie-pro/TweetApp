@@ -8,56 +8,102 @@ class Register extends Component {
     DOB: '',
     email: '',
     password: '',
-    cofirmPwd: '',
+    confirmPwd: '',
+
     isVaildFirstName: false,
     isVaildLastName: false,
     isVaildGender: false,
     isValidDOB: false,
+    isValidEmail: false,
     isValidPassword: false,
     isValidConfimPwd: {},
   };
   onChangeHandler = (e) => {
-    console.log(e);
     this.setState({ [e.target.name]: e.target.value });
 
     console.log(this.state);
     if (e.target.name === 'firstName') {
-      if (this.state.firstName.match('([a-zA-Z][a-zA-Z])*')) {
-        this.setState({ isVaildFirstName: false });
-      } else {
+      // if (this.state.firstName.match('([a-zA-Z][a-zA-Z])*')) {
+      //   this.setState({ isVaildFirstName: true });
+      // } else {
+      //   this.setState({ isVaildFirstName: false });
+      // }
+      if (e.target.value.trim().length === 0) {
         this.setState({ isVaildFirstName: true });
+      } else {
+        this.setState({ isVaildFirstName: false });
       }
-    } else if ([e.target.name] === 'lastName') {
-      console.log(e.target.value.trim().length);
+    } else if (e.target.name === 'lastName') {
+      // console.log(e.target.value.trim().length);
       if (e.target.value.trim().length === 0) {
         this.setState({ isVaildLastName: true });
       } else {
-        this.setState({ isVaildFirstName: false });
+        this.setState({ isVaildLastName: false });
       }
-    } else if ([e.target.name] === 'DOB') {
-      if ([e.target.value].trim().length === 0) {
+    } else if (e.target.name === 'email') {
+      // console.log(e.target.value.trim().length);
+      if (e.target.value.trim().length === 0) {
+        this.setState({ isValidEmail: true });
+      } else {
+        this.setState({ isValidEmail: false });
+      }
+    } else if (e.target.name === 'DOB') {
+      if (e.target.value.trim().length === 0) {
         this.setState({ isValidDOB: true });
+      } else if (e.target.name === 'gender') {
+        this.setState({ gender: e.target.value });
       }
-    } else if ([e.target.name] === 'password') {
-      if ([e.target.value].length === 0) {
+    } else if (e.target.name === 'password') {
+      if (e.target.value.trim().length === 0) {
         this.setState({ isValidPassword: true });
+      } else {
+        this.setState({ isValidPassword: false });
       }
-    } else if ([e.target.name] === 'confirmPassword') {
-      if ([e.target.value].length === 0) {
+    } else if (e.target.name === 'confirmPwd') {
+      console.log(this.state.confirmPwd);
+      if (e.target.value.length === 0) {
         this.setState({
-          isValidPassword: { text: '***Confirm password cannot be empty***' },
+          isValidConfimPwd: { text: '***Confirm password cannot be empty***' },
+        });
+      } else {
+        this.setState({
+          isValidConfimPwd: false,
         });
       }
-      if ([e.target.value] !== this.state.cofirmPwd)
+      let value = e.target.value;
+
+      if (value !== this.state.password) {
         this.setState({
-          isValidPassword: {
+          isValidConfimPwd: {
             text: '***Confirm password must match with the password***',
           },
         });
+      } else {
+        this.setState({
+          isValidConfimPwd: false,
+        });
+      }
     }
   };
 
-  handleSignUp = (e) => {};
+  handleSignUp = (e) => {
+    console.log(e);
+    const { firstName, lastName, gender, DOB, email, password, confirmPwd } = {
+      ...this.state,
+    };
+    e.preventDefault();
+    const registeredValues = {
+      firstName,
+      lastName,
+      gender,
+      DOB,
+      email,
+      password,
+      confirmPwd,
+    };
+
+    this.props.submit(registeredValues);
+  };
   render() {
     const {
       firstName,
@@ -66,12 +112,13 @@ class Register extends Component {
       DOB,
       email,
       password,
-      cofirmPwd,
+      confirmPwd,
       isVaildFirstName,
       isVaildLastName,
       isValidDOB,
       isValidEmail,
       isValidPassword,
+      isValidConfimPwd,
     } = { ...this.state };
 
     return (
@@ -79,7 +126,7 @@ class Register extends Component {
         <div className='container my-2'>
           <div className='row justify-content-center'>
             <div className='col-6'>
-              <form action='' method='POST'>
+              <form>
                 <fieldset className='ml-auto'>
                   <div id='legend' className=''>
                     <legend>Register</legend>
@@ -142,7 +189,8 @@ class Register extends Component {
                         name='gender'
                         id='male'
                         onChange={this.onChangeHandler}
-                        checked
+                        // checked
+                        // checked={gender === "Male"}
                       />
                     </div>
                     <div className='form-check form-check-inline'>
@@ -155,6 +203,7 @@ class Register extends Component {
                         name='gender'
                         id='female'
                         onChange={this.onChangeHandler}
+                        checked={gender === 'female'}
                       />
                     </div>
                     <div className='form-check form-check-inline'>
@@ -167,6 +216,7 @@ class Register extends Component {
                         name='gender'
                         id='Other'
                         onChange={this.onChangeHandler}
+                        checked={gender === 'Other'}
                       />
                     </div>
                   </div>
@@ -179,11 +229,12 @@ class Register extends Component {
                       className='form-control'
                       id='InputEmail'
                       placeholder='Email'
+                      name='email'
                       value={email}
                       onChange={this.onChangeHandler}
                       required
                     />
-                    {isValidEmail && '***Email is required***'}
+                    {isValidEmail && <div>'***Email is required***'</div>}
                   </div>
                   <div className='mb-2'>
                     <label htmlFor='InputPassword' className='form-label'>
@@ -192,6 +243,7 @@ class Register extends Component {
                     <input
                       type='password'
                       className='form-control'
+                      name='password'
                       id='InputPassword'
                       placeholder='password'
                       value={password}
@@ -210,16 +262,20 @@ class Register extends Component {
                     <input
                       type='password'
                       className='form-control'
-                      name='confirmPassword'
-                      id='InputConfirmPassword'
+                      name='confirmPwd'
+                      id='InputcofirmPwd'
                       placeholder='confirm password'
-                      value={cofirmPwd}
+                      value={confirmPwd}
                       onChange={this.onChangeHandler}
                       required
                     />
+                    {isValidConfimPwd.text && isValidConfimPwd.text}
                   </div>
                   <div className='d-grid gap-2 d-md-block'>
-                    <button className='btn btn-success' type='button'>
+                    <button
+                      className='btn btn-success'
+                      onClick={this.handleSignUp}
+                      type='button'>
                       Create Account
                     </button>
                     <button className='btn btn-success ms-5' type='reset'>
