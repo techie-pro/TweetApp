@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 class Register extends Component {
+  // nav = useNavigate();
   state = {
     firstName: '',
     lastName: '',
     gender: '',
-    DOB: '',
+    dob: '',
     email: '',
     password: '',
     confirmPwd: '',
-
     isVaildFirstName: false,
     isVaildLastName: false,
     isVaildGender: false,
@@ -23,7 +22,7 @@ class Register extends Component {
     this.setState((prevState) => {
       return { ...prevState, [e.target.name]: e.target.value };
     });
-    console.log(this.state);
+
     if (e.target.name === 'firstName') {
       if (e.target.value.trim().length === 0) {
         this.setState({ isVaildFirstName: true });
@@ -45,7 +44,6 @@ class Register extends Component {
         this.setState({ isValidEmail: false });
       }
     } else if (e.target.name === 'gender') {
-      console.log(this.state.gender);
       this.setState((prev) => {
         return { ...prev, gender: e.target.value };
       });
@@ -84,37 +82,45 @@ class Register extends Component {
     }
   };
 
-  handleSignUp = async (e) => {
+  handleSignUp = (e) => {
     e.preventDefault();
-    const { firstName, lastName, gender, DOB, email, password } = {
+    const { firstName, lastName, gender, dob, email, password } = {
       ...this.state,
     };
     const registeredValues = {
       firstName,
       lastName,
       gender,
-      DOB,
+      dob,
       email,
       password,
     };
     console.log(registeredValues);
-    await axios
+    let redirect = false;
+    axios
       .post('http://localhost:9731/api/v1.0/tweets/register', registeredValues)
       .then((response) => {
         alert(response.data.message);
+        redirect = true;
       })
       .catch((err) => {
         console.log(err);
+        let message = err.response.data.message;
+        let errors = err.response.data.errors;
+        let pretty = `${message}\n`;
+        for (const property in errors) {
+          pretty = pretty.concat(`\t${errors[property]}\n`);
+        }
+        alert(pretty);
       });
-    useNavigate(-1);
-    this.props.submit(registeredValues);
+    if (redirect) this.props.history.push('/');
   };
   render() {
     const {
       firstName,
       lastName,
       // gender,
-      DOB,
+      dob,
       email,
       password,
       confirmPwd,
@@ -173,9 +179,9 @@ class Register extends Component {
                     <input
                       type='date'
                       className='form-control'
-                      name='DOB'
+                      name='dob'
                       placeholder='Date of Birth'
-                      value={DOB}
+                      value={dob}
                       onChange={this.onChangeHandler}
                     />
                   </div>
@@ -278,7 +284,7 @@ class Register extends Component {
                     <button
                       className='btn btn-success'
                       onClick={this.handleSignUp}
-                      type='button'>
+                      type='submit'>
                       Create Account
                     </button>
                     <button className='btn btn-success ms-5' type='reset'>

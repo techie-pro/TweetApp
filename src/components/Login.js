@@ -31,21 +31,23 @@ const Login = () => {
   };
 
   const onLoginHandler = async (e) => {
+    e.preventDefault();
     const cred = {
-      userName,
+      username: userName,
       password,
     };
 
     await axios
       .post('http://localhost:9731/api/v1.0/tweets/login', cred)
       .then((response) => {
-        setToken(response.authToken);
+        console.log(response);
+        setToken(response.data.authToken);
       })
-      .catch((err, response) => {
-        alert(response.message);
+      .catch((err) => {
+        console.log(err);
       });
 
-    nav(`/home/${token}`);
+    // nav(`/home/${token}`);
   };
 
   return (
