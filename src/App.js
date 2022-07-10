@@ -1,8 +1,11 @@
 import Navbar from './components/Navbar';
 import Login from './components/Login';
 import { Routes, Route } from 'react-router-dom';
-// import Register from './components/Register';
+import HomePage from './components/HomePage';
 import FormValues from './components/FormValues';
+import NotFound from './components/NotFound';
+import ForgotPassword from './components/ForgotPassword';
+import './App.css';
 function App() {
   return (
     <>
@@ -10,7 +13,9 @@ function App() {
       <Routes>
         <Route path='/' element={<Login />}></Route>
         <Route path='/register' element={<FormValues />}></Route>
-        {/* <Route path='/values' element={<FormValues />}></Route> */}
+        <Route path='/home' element={<HomePage />}></Route>
+        <Route path='/forgotpassword' element={<ForgotPassword />}></Route>
+        <Route path='*' element={<NotFound />} />
       </Routes>
     </>
   );

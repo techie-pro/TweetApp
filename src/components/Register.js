@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 class Register extends Component {
   state = {
@@ -13,21 +15,16 @@ class Register extends Component {
     isVaildFirstName: false,
     isVaildLastName: false,
     isVaildGender: false,
-    isValidDOB: false,
     isValidEmail: false,
     isValidPassword: false,
     isValidConfimPwd: {},
   };
   onChangeHandler = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
-
+    this.setState((prevState) => {
+      return { ...prevState, [e.target.name]: e.target.value };
+    });
     console.log(this.state);
     if (e.target.name === 'firstName') {
-      // if (this.state.firstName.match('([a-zA-Z][a-zA-Z])*')) {
-      //   this.setState({ isVaildFirstName: true });
-      // } else {
-      //   this.setState({ isVaildFirstName: false });
-      // }
       if (e.target.value.trim().length === 0) {
         this.setState({ isVaildFirstName: true });
       } else {
@@ -47,12 +44,11 @@ class Register extends Component {
       } else {
         this.setState({ isValidEmail: false });
       }
-    } else if (e.target.name === 'DOB') {
-      if (e.target.value.trim().length === 0) {
-        this.setState({ isValidDOB: true });
-      } else if (e.target.name === 'gender') {
-        this.setState({ gender: e.target.value });
-      }
+    } else if (e.target.name === 'gender') {
+      console.log(this.state.gender);
+      this.setState((prev) => {
+        return { ...prev, gender: e.target.value };
+      });
     } else if (e.target.name === 'password') {
       if (e.target.value.trim().length === 0) {
         this.setState({ isValidPassword: true });
@@ -60,7 +56,6 @@ class Register extends Component {
         this.setState({ isValidPassword: false });
       }
     } else if (e.target.name === 'confirmPwd') {
-      console.log(this.state.confirmPwd);
       if (e.target.value.length === 0) {
         this.setState({
           isValidConfimPwd: { text: '***Confirm password cannot be empty***' },
@@ -75,23 +70,25 @@ class Register extends Component {
       if (value !== this.state.password) {
         this.setState({
           isValidConfimPwd: {
+            valid: true,
             text: '***Confirm password must match with the password***',
           },
         });
       } else {
         this.setState({
-          isValidConfimPwd: false,
+          isValidConfimPwd: {
+            valid: false,
+          },
         });
       }
     }
   };
 
-  handleSignUp = (e) => {
-    console.log(e);
-    const { firstName, lastName, gender, DOB, email, password, confirmPwd } = {
+  handleSignUp = async (e) => {
+    e.preventDefault();
+    const { firstName, lastName, gender, DOB, email, password } = {
       ...this.state,
     };
-    e.preventDefault();
     const registeredValues = {
       firstName,
       lastName,
@@ -99,23 +96,31 @@ class Register extends Component {
       DOB,
       email,
       password,
-      confirmPwd,
     };
-
+    console.log(registeredValues);
+    await axios
+      .post('http://localhost:9731/api/v1.0/tweets/register', registeredValues)
+      .then((response) => {
+        alert(response.data.message);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    useNavigate(-1);
     this.props.submit(registeredValues);
   };
   render() {
     const {
       firstName,
       lastName,
-      gender,
+      // gender,
       DOB,
       email,
       password,
       confirmPwd,
       isVaildFirstName,
       isVaildLastName,
-      isValidDOB,
+
       isValidEmail,
       isValidPassword,
       isValidConfimPwd,
@@ -173,7 +178,6 @@ class Register extends Component {
                       value={DOB}
                       onChange={this.onChangeHandler}
                     />
-                    {isValidDOB && '***DOB is required***'}
                   </div>
                   <div className='mb-2'>
                     <label htmlFor='InputGender' className='form-label'>
@@ -188,9 +192,8 @@ class Register extends Component {
                         type='radio'
                         name='gender'
                         id='male'
+                        value='male'
                         onChange={this.onChangeHandler}
-                        // checked
-                        // checked={gender === "Male"}
                       />
                     </div>
                     <div className='form-check form-check-inline'>
@@ -202,8 +205,8 @@ class Register extends Component {
                         type='radio'
                         name='gender'
                         id='female'
+                        value='female'
                         onChange={this.onChangeHandler}
-                        checked={gender === 'female'}
                       />
                     </div>
                     <div className='form-check form-check-inline'>
@@ -215,8 +218,8 @@ class Register extends Component {
                         type='radio'
                         name='gender'
                         id='Other'
+                        value='Other'
                         onChange={this.onChangeHandler}
-                        checked={gender === 'Other'}
                       />
                     </div>
                   </div>
