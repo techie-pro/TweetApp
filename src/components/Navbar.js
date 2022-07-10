@@ -1,13 +1,13 @@
 import React from 'react';
-// import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 const Navbar = () => {
   return (
     <>
       <nav className='navbar navbar-expand-lg navbar-dark bg-dark'>
         <div className='container-fluid'>
-          <a className='navbar-brand' href='/#'>
+          <Link className='navbar-brand' to='/#'>
             TweetApp
-          </a>
+          </Link>
           <button
             className='navbar-toggler'
             type='button'
@@ -20,18 +20,18 @@ const Navbar = () => {
           </button>
           <div className='collapse navbar-collapse' id='navbarNavAltMarkup'>
             <div className='navbar-nav mx-6'>
-              <a className='nav-link active m-2' aria-current='page' href='/'>
+              <Link className='nav-link active m-2' aria-current='page' to='/'>
                 Login
-              </a>
-              <a className='nav-link m-2' href='/register'>
+              </Link>
+              <Link className='nav-link m-2' to='/register'>
                 Register
-              </a>
-              <a className='nav-link m-2' href='/#'>
-                Tweets
-              </a>
-              <a className='nav-link m-2' href='/#'>
+              </Link>
+              <Link className='nav-link m-2' to='/myTweets'>
+                My Tweets
+              </Link>
+              <Link className='nav-link m-2' to='/allUsers'>
                 All Users
-              </a>
+              </Link>
             </div>
           </div>
         </div>

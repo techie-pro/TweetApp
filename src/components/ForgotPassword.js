@@ -1,63 +1,70 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const ForgotPassword = () => {
   const [username, setUserName] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [isCurrentPassword, setIsCurrentPassword] = useState(false);
-  const [isValidNewPassword, setIsValidNewPassword] = useState(false);
-  const [isValidUser, setIsValidUser] = useState(false);
-
+  const [password, setPassword] = useState('');
+  const [disabled, setDisabled] = useState(true);
+  const [isValidUser, setIsValidUser] = useState({});
+  const [isValidPassword, setIsValidPassword] = useState({});
   const nav = useNavigate();
 
   const onChangeHandler = (e) => {
     if (e.target.name === 'username') {
       setUserName(e.target.value);
-      if (e.target.value.trim().length < 3) setIsValidUser(true);
-      else setIsValidUser(false);
-    } else if (e.target.name === 'currentPassword') {
-      setCurrentPassword(e.target.value);
-      if (e.target.value.trim().length < 5) setIsCurrentPassword({
-        valid: true,
-        text: 'please enter valid password, must contain atleast 6 characters',
-      });
-      else setIsCurrentPassword(false);
-    } else if (e.target.name === 'newPassword') {
-      setNewPassword(e.target.value);
-      if (e.target.value.trim().length < 5)
-        setIsValidNewPassword({
-          valid: true,
-          text: 'New password must contain atleast 6 characters',
+      if (
+        !e.target.value
+          .trim()
+          .match('^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$')
+      )
+        setIsValidUser({
+          valid: false,
+          text: 'username must be valid email',
         });
-      else if (e.target.value === currentPassword)
-        setIsValidNewPassword({
-          valid: true,
-          text: 'New password must not be same as old password',
+      else setIsValidUser({ valid: true, text: null });
+    } else {
+      setPassword(e.target.value);
+      if (e.target.value.trim().length < 8 || e.target.value.trim().length > 25)
+        setIsValidPassword({
+          valid: false,
+          text: 'Password must be 8 to 25 characters long',
         });
       else
-        setIsValidNewPassword({
-          valid: false,
+        setIsValidPassword({
+          valid: true,
+          text: null,
         });
     }
   };
+  useEffect(() => {
+    setDisabled(!(isValidUser.valid && isValidPassword.valid));
+  }, [isValidUser, isValidPassword, disabled]);
 
-  const onLoginHandler = async (e) => {
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
     const cred = {
-      username,
-      currentPassword,
-      newPassword,
+      password,
     };
 
     await axios
-      .post(`localhost:9731/api/v1.0/tweets/${username}/forgot`, cred)
+      .put(`http://localhost:9731/api/v1.0/tweets/${username}/forgot`, cred)
       .then((response) => {
-        if (response.status === 401) alert(response?.message);
-        else alert('Password changed Successfully');
+        alert(response.data.message);
+        nav('/');
+      })
+      .catch((err) => {
+        let message = err.response.data.message;
+        let errors = err.response.data.errors;
+        let pretty = `${message}\n`;
+        for (const property in errors) {
+          pretty = pretty.concat(`\t${errors[property]}\n`);
+        }
+        setUserName('');
+        setPassword('');
+        alert(pretty);
       });
-    nav(-1);
   };
 
   return (
@@ -67,7 +74,7 @@ const ForgotPassword = () => {
           <form action='' method='POST'>
             <fieldset className='ml-auto'>
               <div id='legend' className=''>
-                <legend className=''>ForgotPassword</legend>
+                <legend className=''>Forgot Password</legend>
               </div>
               <div className='mb-2'>
                 <label htmlFor='InputFirstname' className='form-label'>
@@ -83,45 +90,31 @@ const ForgotPassword = () => {
                   onChange={onChangeHandler}
                   required
                 />
-                {isValidUser && 'please enter valid username'}
+                <div>{!isValidUser.valid && isValidUser.text}</div>
               </div>
               <div className='mb-2'>
                 <label htmlFor='InputLastname' className='form-label'>
-                  Current Password
+                  Password
                 </label>
                 <input
                   type='password'
-                  name='currentPassword'
+                  name='password'
                   className='form-control'
+                  id='InputLastname'
                   placeholder='password'
-                  value={currentPassword}
+                  value={password}
                   onChange={onChangeHandler}
                   required
                 />
-                {isCurrentPassword && 'please enter valid password'}
-              </div>
-              <div className='mb-2'>
-                <label htmlFor='InputLastname' className='form-label'>
-                  New Password
-                </label>
-                <input
-                  type='password'
-                  name='newPassword'
-                  className='form-control'
-                  placeholder='password'
-                  value={newPassword}
-                  onChange={onChangeHandler}
-                  required
-                />
-                {isValidNewPassword.valid && isValidNewPassword.text}
+                {!isValidPassword.valid && isValidPassword.text}
               </div>
               <button
-                className='btn btn-success mx-auto mt-3'
+                className='btn btn-success mx-auto'
                 type='submit'
-                onClick={onLoginHandler}>
+                onClick={onSubmitHandler}
+                disabled={disabled}>
                 Change password
               </button>
-              <br />
             </fieldset>
           </form>
         </div>

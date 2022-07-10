@@ -1,7 +1,61 @@
-import React from 'react';
-
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 const AllUsers = () => {
-  return <div>AllUsers</div>;
+  const [users, setUsers] = useState([]);
+  const nav = useNavigate();
+  useEffect(() => {
+    const headers = {
+      Authorization: `Bearer ${sessionStorage.getItem('$myToken$')}`,
+    };
+    axios
+      .get(`http://localhost:9731/api/v1.0/tweets/users/all`, { headers })
+      .then((response) => setUsers(response.data.data))
+      .catch((err) => {
+       
+        if (err.response.status === 403) {
+          alert('Login required to view this page, Please Login');
+          nav('/');
+        } else {
+          let message = err.response.data.message;
+          let errors = err.response.data.errors;
+
+          let pretty = `${message}\n`;
+          for (const property in errors) {
+            pretty = pretty.concat(`\t${errors[property]}\n`);
+          }
+
+          alert(pretty);
+        }
+      });
+  }, [users, nav]);
+  return (
+    <>
+      <div className='container my-5'>
+        <div className='row justify-content-center'>
+          <div className='col-6'>
+            <h2>Users</h2>
+            {users.map((u) => (
+              <div className='card' key={u.id}>
+                <div className='card-body'>
+                  <p className='card-title'>
+                    <span className='badge rounded-pill bg-success fs-6'>
+                      {u.email.charAt(0)}
+                    </span>
+                  </p>
+                  <h6>
+                    <span>{u.firstName}</span>
+                    <span>{u.lastName}</span>
+                  </h6>
+                  <span>{u.email}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default AllUsers;
