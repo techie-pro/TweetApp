@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 class Register extends Component {
   // nav = useNavigate();
@@ -293,9 +294,9 @@ class Register extends Component {
                   </div>
                   <br></br>
                   Already registered ?
-                  <a href='/' className='link-primary mx-3'>
+                  <Link to='/' className='link-primary mx-3'>
                     Sign In
-                  </a>
+                  </Link>
                 </fieldset>
               </form>
             </div>

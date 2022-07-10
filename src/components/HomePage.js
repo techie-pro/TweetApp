@@ -1,42 +1,31 @@
-import React from 'react';
-import initialTweets from '../tweets.json';
-import ComposeForm from './ComposeForm/ComposeForm';
-import Timeline from './Timeline/Timeline';
-import { FaTwitter } from 'react-icons/fa';
-import { useState } from 'react';
-import { nanoid } from 'nanoid';
+import React, { useEffect, useState } from 'react';
+import Form from './Form';
+import Tweets from './Tweets';
+import axios from 'axios';
 
-// this is a way to store the current user name
-const CURRENT_USER = 'Yuvakishore';
+const HomePage = () => {
+  const [tweets, setTweets] = useState([]);
 
-function HomePage() {
-  // We now store the tweets in the state of our component
-  const [tweets, setTweets] = useState(initialTweets);
-
-  // This handler will be called when we want to post a new tweet**
-  const handlePostTweet = (content) => {
-    const newTweet = {
-      content,
-      id: nanoid(),
-      created_on: Date(Date.now()),
-      user: CURRENT_USER,
-      comments_count: 0,
-      retweets_count: 0,
-      favorites_count: 0,
+  useEffect(() => {
+    const headers = {
+      Authorization: `Bearer ${sessionStorage.getItem('$myToken$')}`,
     };
-    // The new tweets array is being created from the values of the
-    // existing one + the newly created tweet
-    setTweets([...tweets, newTweet]);
+    axios
+      .get(`http://localhost:9731/api/v1.0/tweets/all`, { headers })
+      .then((response) => setTweets(response.data.data))
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [tweets]);
+  const addTweetToState = (tweet) => {
+    setTweets([...tweets, tweet]);
   };
-
   return (
-    <div className='app'>
-      <FaTwitter className='app-logo' size='2em' />
-      <ComposeForm onSubmit={handlePostTweet} />
-      <div className='separator'></div>
-      <Timeline tweets={tweets} />
-    </div>
+    <>
+      <Form addTweet={addTweetToState} />
+      <Tweets tweets={tweets} />
+    </>
   );
-}
+};
 
 export default HomePage;

@@ -1,39 +1,52 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 const Login = () => {
-  const [userName, setUserName] = useState('');
+  const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
-  const [isValidUser, setIsValidUser] = useState(false);
-  const [isValidPassword, setIsValidPassword] = useState(false);
+  const [disabled, setDisabled] = useState(true);
+  const [isValidUser, setIsValidUser] = useState({});
+  const [isValidPassword, setIsValidPassword] = useState({});
   const nav = useNavigate();
-  const [token, setToken] = useState('');
+
 
   const onChangeHandler = (e) => {
     if (e.target.name === 'username') {
       setUserName(e.target.value);
-      if (e.target.value.trim().length < 3) setIsValidUser(true);
-      else setIsValidUser(false);
+      if (
+        !e.target.value
+          .trim()
+          .match('^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$')
+      )
+        setIsValidUser({
+          valid: false,
+          text: 'username must be valid email',
+        });
+      else setIsValidUser({ valid: true, text: null });
     } else {
       setPassword(e.target.value);
-      if (e.target.value.trim().length < 5)
+      if (e.target.value.trim().length < 8 || e.target.value.trim().length > 25)
         setIsValidPassword({
-          valid: true,
-          text: 'please enter valid password, must contain atleast 6 characters',
+          valid: false,
+          text: 'Password must be 8 to 25 characters long',
         });
       else
         setIsValidPassword({
-          valid: false,
+          valid: true,
+          text: null,
         });
     }
   };
+  useEffect(() => {
+    setDisabled(!(isValidUser.valid && isValidPassword.valid));
+  }, [isValidUser, isValidPassword, disabled]);
 
   const onLoginHandler = async (e) => {
     e.preventDefault();
     const cred = {
-      username: userName,
+      username,
       password,
     };
 
@@ -41,13 +54,25 @@ const Login = () => {
       .post('http://localhost:9731/api/v1.0/tweets/login', cred)
       .then((response) => {
         console.log(response);
-        setToken(response.data.authToken);
+        sessionStorage.setItem('$myToken$', response.data.data.authToken);
+        sessionStorage.setItem('username', response.data.data.email);
+        console.log(
+          'auth token from state:',
+          sessionStorage.getItem('$myToken$')
+        );
+        nav('/home');
       })
       .catch((err) => {
-        console.log(err);
+        let message = err.response.data.message;
+        let errors = err.response.data.errors;
+        let pretty = `${message}\n`;
+        for (const property in errors) {
+          pretty = pretty.concat(`\t${errors[property]}\n`);
+        }
+        setUserName('');
+        setPassword('');
+        alert(pretty);
       });
-
-    // nav(`/home/${token}`);
   };
 
   return (
@@ -69,11 +94,11 @@ const Login = () => {
                   id='InputUsername'
                   placeholder='Username'
                   name='username'
-                  value={userName}
+                  value={username}
                   onChange={onChangeHandler}
                   required
                 />
-                {isValidUser && 'please enter valid username'}
+                <div>{!isValidUser.valid && isValidUser.text}</div>
               </div>
               <div className='mb-2'>
                 <label htmlFor='InputLastname' className='form-label'>
@@ -89,12 +114,13 @@ const Login = () => {
                   onChange={onChangeHandler}
                   required
                 />
-                {isValidPassword.valid && isValidPassword.text}
+                {!isValidPassword.valid && isValidPassword.text}
               </div>
               <button
                 className='btn btn-success mx-auto'
                 type='submit'
-                onClick={onLoginHandler}>
+                onClick={onLoginHandler}
+                disabled={disabled}>
                 Login
               </button>
               <br />
