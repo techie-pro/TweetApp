@@ -9,10 +9,18 @@ import './App.css';
 import Register from './components/Register';
 import AllUsers from './components/AllUsers';
 import MyTweets from './components/MyTweets';
+import { useState } from 'react';
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+ 
+  const setIsLoggedInValue= (t)=>{
+    setIsLoggedIn(t);
+  }
   return (
     <>
-      <Navbar />
+      <Navbar
+        isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedInValue}
+      />
       <Routes>
         <Route path='/' element={<Login />}></Route>
         <Route path='/register' element={<Register />}></Route>

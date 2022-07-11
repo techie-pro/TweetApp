@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-const Tweet = ({ tweet, updateTweets }) => {
+const Tweet = ({ tweet }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [text, setText] = useState(tweet.text);
   const [disabled, setDisabled] = useState(true);
@@ -30,14 +30,14 @@ const Tweet = ({ tweet, updateTweets }) => {
     };
     const username = sessionStorage.getItem('username');
     axios
-      .post(
+      .put(
         `http://localhost:9731/api/v1.0/tweets/${username}/update/${tweet.id}`,
         request,
         {
           headers,
         }
       )
-      .then((response) => updateTweets(response.data.data))
+      .then((response) => console.log(response))
       .catch((err) => {
         console.log(err);
         let message = err.response.data.message;
@@ -87,15 +87,17 @@ const Tweet = ({ tweet, updateTweets }) => {
             </button>
           </>
         ) : (
-          <h6 className='card-text'>{tweet.text}</h6>
+          <>
+            <h6 className='card-text'>{text}</h6>
+            <button
+              className='btn btn-outline-success btn-sm m-2'
+              onClick={() => {
+                setIsEdit(true);
+              }}>
+              Edit
+            </button>
+          </>
         )}
-        <button
-          className='btn btn-outline-success btn-sm m-2'
-          onClick={() => {
-            setIsEdit(true);
-          }}>
-          Edit
-        </button>
       </div>
     </div>
   );

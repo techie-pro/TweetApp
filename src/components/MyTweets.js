@@ -6,30 +6,38 @@ import { useNavigate } from 'react-router-dom';
 const MyTweets = () => {
   const [tweets, setTweets] = useState([]);
   const nav = useNavigate();
+  console.log("My Tweets");
   useEffect(() => {
-    const headers = {
-      Authorization: `Bearer ${sessionStorage.getItem('$myToken$')}`,
-    };
+    console.log("My Tweets inside useEffect");
+    const token = sessionStorage.getItem('$myToken$');
     const username = sessionStorage.getItem('username');
-    axios
-      .get(`http://localhost:9731/api/v1.0/tweets/${username}`, { headers })
-      .then((response) => setTweets(response.data.data))
-      .catch((err) => {
-        if (err.response.status === 403) {
-          alert('Login required to view this page, Please Login');
-          nav('/');
-        } else {
-          let message = err.response.data.message;
-          let errors = err.response.data.errors;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
 
-          let pretty = `${message}\n`;
-          for (const property in errors) {
-            pretty = pretty.concat(`\t${errors[property]}\n`);
+    if (token) {
+      axios
+        .get(`http://localhost:9731/api/v1.0/tweets/${username}`, { headers })
+        .then((response) => setTweets(response.data.data))
+        .catch((err) => {
+          if (err.response.status === 403) {
+            alert('Login required to view this page, Please Login');
+            nav('/');
+          } else {
+            let message = err.response.data.message;
+            let errors = err.response.data.errors;
+            let pretty = `${message}\n`;
+            for (const property in errors) {
+              pretty = pretty.concat(`\t${errors[property]}\n`);
+            }
+
+            alert(pretty);
           }
-
-          alert(pretty);
-        }
-      });
+        });
+    } else {
+      alert('Login required to view MyTweets, Please Login');
+      nav('/');
+    }
   }, [tweets, nav]);
   return (
     <div>

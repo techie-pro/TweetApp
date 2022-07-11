@@ -11,7 +11,6 @@ const Login = () => {
   const [isValidPassword, setIsValidPassword] = useState({});
   const nav = useNavigate();
 
-
   const onChangeHandler = (e) => {
     if (e.target.name === 'username') {
       setUserName(e.target.value);
@@ -63,15 +62,20 @@ const Login = () => {
         nav('/home');
       })
       .catch((err) => {
-        let message = err.response.data.message;
-        let errors = err.response.data.errors;
-        let pretty = `${message}\n`;
-        for (const property in errors) {
-          pretty = pretty.concat(`\t${errors[property]}\n`);
+        if (err.response.data) {
+          console.log(err);
+          let message = err.response.data.message;
+          let errors = err.response.data.errors;
+          let pretty = `${message}\n`;
+          for (const property in errors) {
+            pretty = pretty.concat(`\t${errors[property]}\n`);
+          }
+          setUserName('');
+          setPassword('');
+          alert(pretty);
+        } else {
+          alert(err.message + ' Try again after some time');
         }
-        setUserName('');
-        setPassword('');
-        alert(pretty);
       });
   };
 
