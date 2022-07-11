@@ -38,7 +38,7 @@ const MyTweets = () => {
       alert('Login required to view MyTweets, Please Login');
       nav('/');
     }
-  }, [tweets, nav]);
+  });
   return (
     <div>
       <Tweets tweets={tweets} />

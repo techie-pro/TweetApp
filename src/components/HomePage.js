@@ -36,7 +36,7 @@ const HomePage = () => {
       alert('Login required to view Home, Please Login');
       nav('/');
     }
-  }, [tweets, nav]);
+  });
 
   const addTweetToState = (tweet) => {
     setTweets([...tweets, tweet]);

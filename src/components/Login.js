@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
-const Login = () => {
+const Login = ({setIsLoggedIn}) => {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [disabled, setDisabled] = useState(true);
@@ -59,6 +59,7 @@ const Login = () => {
           'auth token from state:',
           sessionStorage.getItem('$myToken$')
         );
+        setIsLoggedIn(true);
         nav('/home');
       })
       .catch((err) => {

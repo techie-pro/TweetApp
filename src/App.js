@@ -22,7 +22,7 @@ function App() {
         isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedInValue}
       />
       <Routes>
-        <Route path='/' element={<Login />}></Route>
+        <Route path='/' element={<Login setIsLoggedIn={setIsLoggedInValue}/>}></Route>
         <Route path='/register' element={<Register />}></Route>
         <Route path='/home' element={<HomePage />}></Route>
         <Route path='/allUsers' element={<AllUsers />}></Route>

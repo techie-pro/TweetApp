@@ -6,7 +6,7 @@ const NotFound = () => {
     setTimeout(() => {
       nav('/');
     }, 2000);
-  },[nav]);
+  });
   return (
     <>
       <h1>Page Not found</h1>
