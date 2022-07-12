@@ -36,7 +36,7 @@ const AllUsers = () => {
       alert('Login required to view All Users, Please Login');
       nav('/');
     }
-  });
+  },[nav]);
   return (
     <>
       <div className='container my-5'>

@@ -6,9 +6,10 @@ import { useNavigate } from 'react-router-dom';
 const MyTweets = () => {
   const [tweets, setTweets] = useState([]);
   const nav = useNavigate();
-  console.log("My Tweets");
+  console.log('My Tweets');
+
   useEffect(() => {
-    console.log("My Tweets inside useEffect");
+    console.log('My Tweets inside useEffect');
     const token = sessionStorage.getItem('$myToken$');
     const username = sessionStorage.getItem('username');
     const headers = {
@@ -38,9 +39,10 @@ const MyTweets = () => {
       alert('Login required to view MyTweets, Please Login');
       nav('/');
     }
-  });
+  }, [nav]);
   return (
     <div>
+      
       <Tweets tweets={tweets} />
     </div>
   );

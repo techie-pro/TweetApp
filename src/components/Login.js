@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
-const Login = ({setIsLoggedIn}) => {
+const Login = ({ setIsLoggedIn }) => {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [disabled, setDisabled] = useState(true);
@@ -40,7 +40,7 @@ const Login = ({setIsLoggedIn}) => {
   };
   useEffect(() => {
     setDisabled(!(isValidUser.valid && isValidPassword.valid));
-  }, [isValidUser, isValidPassword, disabled]);
+  }, [isValidUser, isValidPassword]);
 
   const onLoginHandler = async (e) => {
     e.preventDefault();

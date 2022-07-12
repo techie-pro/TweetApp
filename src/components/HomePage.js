@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 const HomePage = () => {
   const [tweets, setTweets] = useState([]);
-
+  const [tweetList, setTweetList] = useState([]);
   const nav = useNavigate();
 
   const username = sessionStorage.getItem('username');
@@ -21,7 +21,11 @@ const HomePage = () => {
     if (token) {
       axios
         .get(`http://localhost:9731/api/v1.0/tweets/all`, { headers })
-        .then((response) => setTweets(response.data.data))
+        .then((response) => {
+          setTweets(response.data.data);
+          setTweetList(response.data.data);
+        })
+
         .catch((err) => {
           console.log(err);
           let message = err.response.data.message;
@@ -36,15 +40,21 @@ const HomePage = () => {
       alert('Login required to view Home, Please Login');
       nav('/');
     }
-  });
+  }, [nav]);
+
+  useEffect(() => {
+    setTweets(tweetList);
+  }, [tweetList]);
 
   const addTweetToState = (tweet) => {
-    setTweets([...tweets, tweet]);
+    setTweetList([...tweetList, tweet]);
   };
 
   return (
     <>
-      <h1 className='h1'>Welcome {username && username.split('@')[0].toUpperCase()}</h1>
+      <h1 className='h1'>
+        Welcome {username && username.split('@')[0].toUpperCase()}
+      </h1>
       <Form addTweet={addTweetToState} />
       <Tweets tweets={tweets} />
     </>

@@ -37,7 +37,9 @@ const Tweet = ({ tweet }) => {
           headers,
         }
       )
-      .then((response) => console.log(response))
+      .then((response) => {
+        if (response.status === 200) alert('Tweet updated sucessfully');
+      })
       .catch((err) => {
         console.log(err);
         let message = err.response.data.message;

@@ -12,17 +12,17 @@ import MyTweets from './components/MyTweets';
 import { useState } from 'react';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
- 
-  const setIsLoggedInValue= (t)=>{
+
+  const setIsLoggedInValue = (t) => {
     setIsLoggedIn(t);
-  }
+  };
   return (
     <>
-      <Navbar
-        isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedInValue}
-      />
+      <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedInValue} />
       <Routes>
-        <Route path='/' element={<Login setIsLoggedIn={setIsLoggedInValue}/>}></Route>
+        <Route
+          path='/'
+          element={<Login setIsLoggedIn={setIsLoggedInValue} />}></Route>
         <Route path='/register' element={<Register />}></Route>
         <Route path='/home' element={<HomePage />}></Route>
         <Route path='/allUsers' element={<AllUsers />}></Route>
