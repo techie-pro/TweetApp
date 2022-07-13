@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Form from './Form';
-import Tweets from './Tweets';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 const HomePage = () => {
   const [tweets, setTweets] = useState([]);
-  const [tweetList, setTweetList] = useState([]);
+
   const nav = useNavigate();
 
   const username = sessionStorage.getItem('username');
@@ -23,7 +22,8 @@ const HomePage = () => {
         .get(`http://localhost:9731/api/v1.0/tweets/all`, { headers })
         .then((response) => {
           setTweets(response.data.data);
-          setTweetList(response.data.data);
+          console.log(response.data.data);
+          console.log('state tweets has been set :' + tweets);
         })
 
         .catch((err) => {
@@ -42,21 +42,12 @@ const HomePage = () => {
     }
   }, [nav]);
 
-  useEffect(() => {
-    setTweets(tweetList);
-  }, [tweetList]);
-
-  const addTweetToState = (tweet) => {
-    setTweetList([...tweetList, tweet]);
-  };
-
   return (
     <>
       <h1 className='h1'>
         Welcome {username && username.split('@')[0].toUpperCase()}
       </h1>
-      <Form addTweet={addTweetToState} />
-      <Tweets tweets={tweets} />
+      <Form initial={tweets} />
     </>
   );
 };

@@ -1,11 +1,15 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Tweets from './Tweets';
 
-const Form = ({ addTweet }) => {
+const Form = ({ initial }) => {
   const [text, setText] = useState('');
   const [isValidText, setValidText] = useState({ valid: false, text: null });
   const [disabled, setDisabled] = useState(true);
+  const [tweetList, setTweetList] = useState([]);
+
+  console.log(tweetList);
   const onTextHandler = (e) => {
     setText(e.target.value);
     if (e.target.value.trim().length < 0) {
@@ -20,9 +24,15 @@ const Form = ({ addTweet }) => {
       });
     } else setValidText({ valid: true, text: null });
   };
+
   useEffect(() => {
     setDisabled(!isValidText.valid);
-  }, [isValidText, disabled]);
+    setTweetList(initial);
+  }, [isValidText, initial]);
+
+  const addTweet = (tweet) => {
+    setTweetList([...tweetList, tweet]);
+  };
 
   const handlePost = (e) => {
     e.preventDefault();
@@ -49,45 +59,49 @@ const Form = ({ addTweet }) => {
         alert(pretty);
       });
   };
-  return (
-    <div className='container my-5'>
-      <div className='row justify-content-center'>
-        <div className='col-6'>
-          <form action='' method='POST'>
-            <fieldset className='ml-auto'>
-              <div id='legend' className=''>
-                <legend className=''>Tweet here</legend>
-              </div>
-              <div className='mb-2'>
-                <label htmlFor='InputFirstname' className='form-label'>
-                  Text
-                </label>
-                <textarea
-                  type='text'
-                  className='form-control'
-                  id='InputUsername'
-                  placeholder='Tweet Here'
-                  name='text'
-                  value={text}
-                  onChange={onTextHandler}
-                  required
-                />
-                <div>{!isValidText.valid && isValidText.text}</div>
-              </div>
 
-              <button
-                className='btn btn-success mx-auto'
-                type='submit'
-                onClick={handlePost}
-                disabled={disabled}>
-                Post
-              </button>
-              <br />
-            </fieldset>
-          </form>
+  return (
+    <>
+      <div className='container my-5'>
+        <div className='row justify-content-center'>
+          <div className='col-6'>
+            <form action='' method='POST'>
+              <fieldset className='ml-auto'>
+                <div id='legend' className=''>
+                  <legend className=''>Tweet here</legend>
+                </div>
+                <div className='mb-2'>
+                  <label htmlFor='InputFirstname' className='form-label'>
+                    Text
+                  </label>
+                  <textarea
+                    type='text'
+                    className='form-control'
+                    id='InputUsername'
+                    placeholder='Tweet Here'
+                    name='text'
+                    value={text}
+                    onChange={onTextHandler}
+                    required
+                  />
+                  <div>{!isValidText.valid && isValidText.text}</div>
+                </div>
+
+                <button
+                  className='btn btn-success mx-auto'
+                  type='submit'
+                  onClick={handlePost}
+                  disabled={disabled}>
+                  Post
+                </button>
+                <br />
+              </fieldset>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+      <Tweets tweets={tweetList} />
+    </>
   );
 };
 

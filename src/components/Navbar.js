@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-const Navbar = ({isLoggedIn,setIsLoggedIn}) => {
+const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   return (
     <>
       <nav className='navbar navbar-expand-lg navbar-dark bg-dark'>
@@ -23,6 +23,9 @@ const Navbar = ({isLoggedIn,setIsLoggedIn}) => {
             <div className='navbar-nav mx-6'>
               {isLoggedIn ? (
                 <>
+                  <Link className='nav-link m-2' to='/home'>
+                    Home
+                  </Link>
                   <Link className='nav-link m-2' to='/myTweets'>
                     My Tweets
                   </Link>
@@ -33,7 +36,7 @@ const Navbar = ({isLoggedIn,setIsLoggedIn}) => {
                     className='nav-link m-2'
                     to='/'
                     onClick={() => {
-                      setIsLoggedIn(false)
+                      setIsLoggedIn(false);
                       sessionStorage.clear();
                     }}>
                     Logout

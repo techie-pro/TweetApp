@@ -19,7 +19,9 @@ const MyTweets = () => {
     if (token) {
       axios
         .get(`http://localhost:9731/api/v1.0/tweets/${username}`, { headers })
-        .then((response) => setTweets(response.data.data))
+        .then((response) => {
+          setTweets(response.data.data);
+        })
         .catch((err) => {
           if (err.response.status === 403) {
             alert('Login required to view this page, Please Login');
@@ -42,7 +44,6 @@ const MyTweets = () => {
   }, [nav]);
   return (
     <div>
-      
       <Tweets tweets={tweets} />
     </div>
   );

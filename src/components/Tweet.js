@@ -91,6 +91,7 @@ const Tweet = ({ tweet }) => {
         ) : (
           <>
             <h6 className='card-text'>{text}</h6>
+            
             <button
               className='btn btn-outline-success btn-sm m-2'
               onClick={() => {
