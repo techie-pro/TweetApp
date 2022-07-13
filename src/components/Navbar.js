@@ -1,60 +1,32 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
+import React from "react";
+import { Link } from "react-router-dom";
+const Navbar = ({ isLoggedIn, setIsLoggedIn, navList }) => {
   return (
     <>
-      <nav className='navbar navbar-expand-lg navbar-dark bg-dark'>
-        <div className='container-fluid'>
-          <Link className='navbar-brand' to='/#'>
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div className="container-fluid">
+          <Link className="navbar-brand" to="/#">
             TweetApp
           </Link>
           <button
-            className='navbar-toggler'
-            type='button'
-            data-bs-toggle='collapse'
-            data-bs-target='#navbarNavAltMarkup'
-            aria-controls='navbarNavAltMarkup'
-            aria-expanded='false'
-            aria-label='Toggle navigation'>
-            <span className='navbar-toggler-icon'></span>
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
           </button>
 
-          <div className='collapse navbar-collapse' id='navbarNavAltMarkup'>
-            <div className='navbar-nav mx-6'>
-              {isLoggedIn ? (
-                <>
-                  <Link className='nav-link m-2' to='/home'>
-                    Home
-                  </Link>
-                  <Link className='nav-link m-2' to='/myTweets'>
-                    My Tweets
-                  </Link>
-                  <Link className='nav-link m-2' to='/allUsers'>
-                    All Users
-                  </Link>
-                  <Link
-                    className='nav-link m-2'
-                    to='/'
-                    onClick={() => {
-                      setIsLoggedIn(false);
-                      sessionStorage.clear();
-                    }}>
-                    Logout
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link
-                    className='nav-link active m-2'
-                    aria-current='page'
-                    to='/'>
-                    Login
-                  </Link>
-                  <Link className='nav-link m-2' to='/register'>
-                    Register
-                  </Link>
-                </>
-              )}
+          <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div className="navbar-nav mx-6">
+              {navList.map((nav) => (
+                <Link className="nav-link m-2" to={nav.route}>
+                  {nav.text}
+                </Link>
+              ))}
             </div>
           </div>
         </div>

@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import Form from './Form';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import Form from "./Form";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const HomePage = () => {
   const [tweets, setTweets] = useState([]);
 
   const nav = useNavigate();
 
-  const username = sessionStorage.getItem('username');
-  console.log('My Homepage');
+  const username = sessionStorage.getItem("username");
+  console.log("My Homepage");
 
   useEffect(() => {
-    console.log('My Homepage inside useEffect');
-    const token = sessionStorage.getItem('$myToken$');
+    console.log("My Homepage inside useEffect");
+    const token = sessionStorage.getItem("$myToken$");
     const headers = {
       Authorization: `Bearer ${token}`,
     };
@@ -22,8 +22,6 @@ const HomePage = () => {
         .get(`http://localhost:9731/api/v1.0/tweets/all`, { headers })
         .then((response) => {
           setTweets(response.data.data);
-          console.log(response.data.data);
-          console.log('state tweets has been set :' + tweets);
         })
 
         .catch((err) => {
@@ -37,15 +35,15 @@ const HomePage = () => {
           alert(pretty);
         });
     } else {
-      alert('Login required to view Home, Please Login');
-      nav('/');
+      alert("Login required to view Home, Please Login");
+      nav("/");
     }
   }, [nav]);
 
   return (
     <>
-      <h1 className='h1'>
-        Welcome {username && username.split('@')[0].toUpperCase()}
+      <h1 className="h1">
+        Welcome {username && username.split("@")[0].toUpperCase()}
       </h1>
       <Form initial={tweets} />
     </>
