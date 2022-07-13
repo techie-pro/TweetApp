@@ -21,8 +21,6 @@ class Register extends Component {
     isValidConfimPwd: { text: null, valid: true },
   };
 
-  getSnapshotBeforeUpdate() {}
-
   componentDidUpdate() {
     this.submitDisabled =
       this.state.isVaildFirstName.valid &&
@@ -35,7 +33,6 @@ class Register extends Component {
   }
 
   onChangeHandler = (e) => {
-    console.log(e);
     this.setState((prevState) => {
       return { ...prevState, [e.target.name]: e.target.value };
     });
@@ -157,7 +154,6 @@ class Register extends Component {
       email,
       password,
     };
-    console.log(registeredValues);
     let redirect = false;
     axios
       .post("http://localhost:9731/api/v1.0/tweets/register", registeredValues)
@@ -181,7 +177,6 @@ class Register extends Component {
         redirect = true;
       })
       .catch((err) => {
-        console.log(err);
         let message = err.response.data.message;
         let errors = err.response.data.errors;
         let pretty = `${message}\n`;
@@ -197,7 +192,6 @@ class Register extends Component {
     const {
       firstName,
       lastName,
-      // gender,
       dob,
       email,
       password,

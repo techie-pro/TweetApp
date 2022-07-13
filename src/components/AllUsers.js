@@ -4,9 +4,7 @@ import { useNavigate } from "react-router-dom";
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
   const nav = useNavigate();
-  console.log("Allusers");
   useEffect(() => {
-    console.log("All Users inside useEffect");
     const token = sessionStorage.getItem("$myToken$");
     const headers = {
       Authorization: `Bearer ${token}`,
@@ -47,20 +45,23 @@ const AllUsers = () => {
           <div className="col-6">
             <h2>Users</h2>
             {users.map((u) => (
-              <div className="card" key={u.id}>
-                <div className="card-body">
-                  <p className="card-title">
-                    <span className="badge rounded-pill bg-success fs-6">
-                      {u.email.charAt(0)}
-                    </span>
-                  </p>
-                  <h6>
-                    <span>{u.firstName}</span>
-                    <span>{u.lastName}</span>
-                  </h6>
-                  <span>{u.email}</span>
+              <>
+                <hr />
+                <div className="card" key={u.id}>
+                  <div className="card-body">
+                    <p className="card-title">
+                      <span className="badge rounded-pill bg-success fs-6">
+                        {u.email.charAt(0)}
+                      </span>
+                    </p>
+                    <h6>
+                      <span>{u.firstName}</span>
+                      <span>{u.lastName}</span>
+                    </h6>
+                    <span>{u.email}</span>
+                  </div>
                 </div>
-              </div>
+              </>
             ))}
           </div>
         </div>

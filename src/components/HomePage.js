@@ -8,10 +8,8 @@ const HomePage = () => {
   const nav = useNavigate();
 
   const username = sessionStorage.getItem("username");
-  console.log("My Homepage");
 
   useEffect(() => {
-    console.log("My Homepage inside useEffect");
     const token = sessionStorage.getItem("$myToken$");
     const headers = {
       Authorization: `Bearer ${token}`,

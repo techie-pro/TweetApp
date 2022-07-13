@@ -23,15 +23,16 @@ const Tweet = ({ tweet }) => {
       });
     } else setValidText({ valid: true, text: null });
   };
+  const username = sessionStorage.getItem("username");
+  const token = sessionStorage.getItem("$myToken$");
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
 
   const updateTweet = () => {
     const request = {
       text,
     };
-    const headers = {
-      Authorization: `Bearer ${sessionStorage.getItem("$myToken$")}`,
-    };
-    const username = sessionStorage.getItem("username");
     axios
       .put(
         `http://localhost:9731/api/v1.0/tweets/${username}/update/${tweet.id}`,
@@ -44,7 +45,6 @@ const Tweet = ({ tweet }) => {
         if (response.status === 200) alert("Tweet updated sucessfully");
       })
       .catch((err) => {
-        console.log(err);
         let message = err.response.data.message;
         let errors = err.response.data.errors;
         let pretty = `${message}\n`;
@@ -56,6 +56,28 @@ const Tweet = ({ tweet }) => {
     setIsEdit(false);
   };
 
+  const onDelete = () => {
+    axios
+      .delete(
+        `http://localhost:9731/api/v1.0/tweets/${username}/delete/${tweet.id}`,
+        {
+          headers,
+        }
+      )
+      .then((response) => {
+        if (response.status === 200) alert("Tweet updated sucessfully");
+      })
+      .catch((err) => {
+        let message = err.response.data.message;
+        let errors = err.response.data.errors;
+        let pretty = `${message}\n`;
+        for (const property in errors) {
+          pretty = pretty.concat(`\t${errors[property]}\n`);
+        }
+        alert(pretty);
+      });
+  };
+
   useEffect(() => {
     setDisabled(!isValidText.valid);
   }, [isValidText, disabled]);
@@ -65,7 +87,7 @@ const Tweet = ({ tweet }) => {
       <div className="card-body">
         <p className="card-title">
           <span className="badge rounded-pill bg-success fs-6">
-            {tweet.username.charAt(0)}
+            {tweet.username.charAt(0).toUpperCase()}
           </span>
           <span className="m-2">{tweet.username}</span>
           <span> {moment(tweet.timestamp).fromNow()}</span>
@@ -95,24 +117,23 @@ const Tweet = ({ tweet }) => {
         ) : (
           <>
             <h6 className="card-text">{text}</h6>
-
-            <button
-              className="btn btn-outline-success btn-sm m-2"
-              onClick={() => {
-                setIsEdit(true);
-              }}
-            >
-              Edit
-            </button>
             {location.pathname === "/myTweets" && (
-              <button
-                className="btn btn-outline-danger btn-sm m-2"
-                onClick={() => {
-                  setIsEdit(true);
-                }}
-              >
-                Delete
-              </button>
+              <>
+                <button
+                  className="btn btn-outline-success btn-sm m-2"
+                  onClick={() => {
+                    setIsEdit(true);
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  className="btn btn-outline-danger btn-sm m-2"
+                  onClick={onDelete}
+                >
+                  Delete
+                </button>
+              </>
             )}
           </>
         )}

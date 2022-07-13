@@ -1,13 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-const Navbar = ({ isLoggedIn, setIsLoggedIn, navList }) => {
+const Navbar = ({ navList }) => {
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav className="navbar navbar-expand-md navbar-dark bg-dark">
         <div className="container-fluid">
-          <Link className="navbar-brand" to="/#">
-            TweetApp
-          </Link>
+          <div className="navbar-brand">TweetApp</div>
           <button
             className="navbar-toggler"
             type="button"
@@ -22,11 +20,28 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, navList }) => {
 
           <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div className="navbar-nav mx-6">
-              {navList.map((nav, index) => (
-                <Link className="nav-link m-2" to={nav.route} key={index}>
-                  {nav.text}
-                </Link>
-              ))}
+              {navList.map((nav, index) => {
+                if (nav.text === "Logout") {
+                  return (
+                    <Link
+                      className="nav-link m-2"
+                      to={nav.route}
+                      key={index}
+                      onClick={() => {
+                        sessionStorage.clear();
+                      }}
+                    >
+                      {nav.text}
+                    </Link>
+                  );
+                } else {
+                  return (
+                    <Link className="nav-link m-2" to={nav.route} key={index}>
+                      {nav.text}
+                    </Link>
+                  );
+                }
+              })}
             </div>
           </div>
         </div>

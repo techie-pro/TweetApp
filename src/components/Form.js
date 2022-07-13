@@ -2,14 +2,15 @@ import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Tweets from "./Tweets";
+import { useNavigate } from "react-router-dom";
 
 const Form = ({ initial }) => {
   const [text, setText] = useState("");
   const [isValidText, setValidText] = useState({ valid: false, text: null });
   const [disabled, setDisabled] = useState(true);
   const [tweetList, setTweetList] = useState([]);
+  const nav = useNavigate();
 
-  console.log(tweetList);
   const onTextHandler = (e) => {
     setText(e.target.value);
     if (e.target.value.trim().length < 0) {
@@ -52,14 +53,23 @@ const Form = ({ initial }) => {
       })
       .then((response) => addTweet(response.data.data))
       .catch((err) => {
-        console.log(err);
-        let message = err.response.data.message;
-        let errors = err.response.data.errors;
-        let pretty = `${message}\n`;
-        for (const property in errors) {
-          pretty = pretty.concat(`\t${errors[property]}\n`);
+        if (err.response.status === 403) {
+          alert("Login required to view this page, Please Login");
+          nav("/");
+        } else {
+          if (err.response.data) {
+            let message = err.response.data.message;
+            let errors = err.response.data.errors;
+            let pretty = `${message}\n`;
+            for (const property in errors) {
+              pretty = pretty.concat(`\t${errors[property]}\n`);
+            }
+
+            alert(pretty);
+          } else {
+            alert(err.message + " Try again after some time");
+          }
         }
-        alert(pretty);
       });
   };
 
