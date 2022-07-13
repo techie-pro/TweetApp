@@ -25,14 +25,23 @@ const HomePage = () => {
         })
 
         .catch((err) => {
-          console.log(err);
-          let message = err.response.data.message;
-          let errors = err.response.data.errors;
-          let pretty = `${message}\n`;
-          for (const property in errors) {
-            pretty = pretty.concat(`\t${errors[property]}\n`);
+          if (err.response.status === 403) {
+            alert("Login required to view this page, Please Login");
+            nav("/");
+          } else {
+            if (err.response.data) {
+              let message = err.response.data.message;
+              let errors = err.response.data.errors;
+              let pretty = `${message}\n`;
+              for (const property in errors) {
+                pretty = pretty.concat(`\t${errors[property]}\n`);
+              }
+
+              alert(pretty);
+            } else {
+              alert(err.message + " Try again after some time");
+            }
           }
-          alert(pretty);
         });
     } else {
       alert("Login required to view Home, Please Login");

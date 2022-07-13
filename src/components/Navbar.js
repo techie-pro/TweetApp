@@ -22,8 +22,8 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, navList }) => {
 
           <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div className="navbar-nav mx-6">
-              {navList.map((nav) => (
-                <Link className="nav-link m-2" to={nav.route}>
+              {navList.map((nav, index) => (
+                <Link className="nav-link m-2" to={nav.route} key={index}>
                   {nav.text}
                 </Link>
               ))}
