@@ -1,14 +1,13 @@
-import React from "react";
-import { useState, useEffect } from "react";
 import axios from "axios";
-import Tweets from "./Tweets";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Form = ({ initial }) => {
-  const [text, setText] = useState("");
+const ReplyModal = ({ updateReplies, tweetId }) => {
+  console.log(tweetId);
+  // const [id, setId] = useState("");
+  const [text, setText] = useState([]);
   const [isValidText, setValidText] = useState({ valid: false, text: null });
   const [disabled, setDisabled] = useState(true);
-  const [tweetList, setTweetList] = useState([]);
   const nav = useNavigate();
 
   const onTextHandler = (e) => {
@@ -30,16 +29,11 @@ const Form = ({ initial }) => {
     setDisabled(!isValidText.valid);
   }, [isValidText]);
 
-  useEffect(() => {
-    setTweetList(initial);
-  }, [initial]);
+  // useEffect(() => {
+  //   setId(tweetId);
+  // }, [tweetId]);
 
-  const addTweet = (tweet) => {
-    setTweetList([...tweetList, tweet]);
-  };
-
-  const handlePost = (e) => {
-    e.preventDefault();
+  const onReply = () => {
     const request = {
       text,
     };
@@ -48,10 +42,14 @@ const Form = ({ initial }) => {
     };
     const username = sessionStorage.getItem("username");
     axios
-      .post(`http://localhost:9731/api/v1.0/tweets/${username}/add`, request, {
-        headers,
-      })
-      .then((response) => addTweet(response.data.data))
+      .post(
+        `http://localhost:9731/api/v1.0/tweets/${username}/reply/${tweetId}`,
+        request,
+        {
+          headers,
+        }
+      )
+      .then((response) => updateReplies(response.data.data.replies))
       .catch((err) => {
         if (err.response.status === 403) {
           alert("Login required to view this page, Please Login");
@@ -74,21 +72,38 @@ const Form = ({ initial }) => {
   };
 
   return (
-    <>
-      <div className="container my-5">
-        <div className="row justify-content-center">
-          <div className="col-6">
+    <div
+      class="modal fade"
+      id="staticBackdrop"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+      aria-labelledby="staticBackdropLabel"
+      aria-hidden="true"
+      key={tweetId}
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">
+              Reply here
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
             <form action="" method="POST">
               <fieldset className="ml-auto">
-                <div id="legend" className="">
-                  <legend className="">Tweet here</legend>
-                </div>
                 <div className="mb-2">
                   <textarea
                     type="text"
                     className="form-control"
                     id="InputUsername"
-                    placeholder="Tweet Here"
+                    placeholder="Reply Here"
                     name="text"
                     value={text}
                     onChange={onTextHandler}
@@ -96,24 +111,31 @@ const Form = ({ initial }) => {
                   />
                   <div>{!isValidText.valid && isValidText.text}</div>
                 </div>
-
-                <button
-                  className="btn btn-success mx-auto"
-                  type="submit"
-                  onClick={handlePost}
-                  disabled={disabled}
-                >
-                  Post
-                </button>
-                <br />
               </fieldset>
             </form>
           </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-success"
+              data-bs-dismiss="modal"
+              onClick={onReply}
+              disabled={disabled}
+            >
+              Reply
+            </button>
+          </div>
         </div>
       </div>
-      <Tweets tweets={tweetList} />
-    </>
+    </div>
   );
 };
 
-export default Form;
+export default ReplyModal;

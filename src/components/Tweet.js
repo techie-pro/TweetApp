@@ -2,11 +2,14 @@ import axios from "axios";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import Reply from "./Reply";
+import ReplyModal from "./ReplyModal";
 const Tweet = ({ tweet }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [text, setText] = useState(tweet.text);
   const [disabled, setDisabled] = useState(true);
   const [isValidText, setValidText] = useState({ valid: false, text: null });
+  const [replies, setReplies] = useState([]);
   const location = useLocation();
 
   const onTextHandler = (e) => {
@@ -65,7 +68,7 @@ const Tweet = ({ tweet }) => {
         }
       )
       .then((response) => {
-        if (response.status === 200) alert("Tweet updated sucessfully");
+        if (response.status === 200) alert("Tweet deleted sucessfully");
       })
       .catch((err) => {
         let message = err.response.data.message;
@@ -78,12 +81,20 @@ const Tweet = ({ tweet }) => {
       });
   };
 
+  const updateReplies = (replies) => {
+    setReplies(replies);
+  };
+
   useEffect(() => {
     setDisabled(!isValidText.valid);
-  }, [isValidText, disabled]);
+  }, [isValidText]);
+
+  useEffect(() => {
+    setReplies(tweet.replies);
+  }, [tweet.replies]);
 
   return (
-    <div className="card" key={tweet.id}>
+    <div className="card fs-5 m-2" key={tweet.id}>
       <div className="card-body">
         <p className="card-title">
           <span className="badge rounded-pill bg-success fs-6">
@@ -95,49 +106,80 @@ const Tweet = ({ tweet }) => {
 
         {isEdit ? (
           <>
-            <textarea
-              type="text"
-              className="form-control"
-              id="InputUsername"
-              placeholder="Tweet Here"
-              name="text"
-              value={text}
-              onChange={onTextHandler}
-              required
-            />
-            {}
-            <button
-              className="btn btn-outline-success btn-sm"
-              onClick={updateTweet}
-              disabled={disabled}
-            >
-              Save
-            </button>
+            <div className="row">
+              <textarea
+                type="text"
+                className="form-control"
+                id="InputUsername"
+                placeholder="Tweet Here"
+                name="text"
+                value={text}
+                onChange={onTextHandler}
+                required
+              />
+            </div>
+            <div className="row m-2">
+              <button
+                className="btn btn-outline-success btn-sm col"
+                onClick={updateTweet}
+                disabled={disabled}
+              >
+                Save
+              </button>
+              <button
+                className="btn btn-outline-success btn-sm col"
+                onClick={() => {
+                  setIsEdit(false);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
           </>
         ) : (
           <>
-            <h6 className="card-text">{text}</h6>
-            {location.pathname === "/myTweets" && (
-              <>
-                <button
-                  className="btn btn-outline-success btn-sm m-2"
-                  onClick={() => {
-                    setIsEdit(true);
-                  }}
-                >
-                  Edit
-                </button>
-                <button
-                  className="btn btn-outline-danger btn-sm m-2"
-                  onClick={onDelete}
-                >
-                  Delete
-                </button>
-              </>
-            )}
+            <p className="card-text text-bold">{text}</p>
+            <div className="row">
+              <button
+                type="button"
+                className="btn btn-outline-info btn-sm m-2 col"
+                data-bs-toggle="modal"
+                data-bs-target="#staticBackdrop"
+              >
+                Reply
+              </button>
+              <ReplyModal addReply={updateReplies} tweetId={tweet.id} />
+              {location.pathname === "/myTweets" && (
+                <>
+                  <button
+                    type="buttton"
+                    className="btn btn-outline-success btn-sm m-2 col"
+                    onClick={() => {
+                      setIsEdit(true);
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline-danger btn-sm m-2 col"
+                    onClick={onDelete}
+                  >
+                    Delete
+                  </button>
+                </>
+              )}
+            </div>
           </>
         )}
       </div>
+      {replies && replies.length > 0 && (
+        <div className="card-footer text-muted">
+          {replies.map((reply, index) => (
+            <Reply reply={reply} key={index} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
