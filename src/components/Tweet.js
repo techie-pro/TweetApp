@@ -12,7 +12,7 @@ const Tweet = ({ tweet, deleteTweet }) => {
   const [disabled, setDisabled] = useState(true);
   const [isValidText, setValidText] = useState({ valid: false, text: null });
   const [replies, setReplies] = useState([]);
-  const [likes, setLikes] = useState();
+  const [likes, setLikes] = useState(0);
   const location = useLocation();
   const username = sessionStorage.getItem('username');
   const token = sessionStorage.getItem('$myToken$');
@@ -115,9 +115,14 @@ const Tweet = ({ tweet, deleteTweet }) => {
     setReplies(replies);
   };
   const updateLikes = () => {
+    setLikes((prev) => prev + 1);
+    const body = {
+      likes: likes,
+    };
     axios
       .put(
         `http://localhost:9731/api/v1.0/tweets/${username}/like/${tweet.id}`,
+        body,
         {
           headers,
         }
@@ -205,11 +210,13 @@ const Tweet = ({ tweet, deleteTweet }) => {
         ) : (
           <>
             <div className='card-text row'>
-              <span className='col-10 fs-5'>{text}</span>
-              <span className='col-1' onClick={updateLikes}>
+              <span className='col-8 fs-5'>{text}</span>
+              <button
+                className='btn btn-outline col-2 p-0'
+                onClick={updateLikes}>
                 <BsSuitHeart />
-              </span>
-              <span className='col-1'>{likes}</span>
+              </button>
+              <span className='col-2'>{likes}</span>
             </div>
             <div className='row'>
               <button
