@@ -1,15 +1,21 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../../api/axios';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import useAuth from './../../Hooks/useAuth';
 
-const ForgotPassword = () => {
+const Login_URL = '/api/v1.0/tweets/login';
+
+const Login = () => {
+  const { auth, setAuth } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/home';
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [disabled, setDisabled] = useState(true);
   const [isValidUser, setIsValidUser] = useState({});
   const [isValidPassword, setIsValidPassword] = useState({});
-  const nav = useNavigate();
 
   const onChangeHandler = (e) => {
     if (e.target.name === 'username') {
@@ -40,30 +46,42 @@ const ForgotPassword = () => {
   };
   useEffect(() => {
     setDisabled(!(isValidUser.valid && isValidPassword.valid));
-  }, [isValidUser, isValidPassword, disabled]);
+  }, [isValidUser, isValidPassword]);
 
-  const onSubmitHandler = async (e) => {
+  const onLoginHandler = async (e) => {
     e.preventDefault();
     const cred = {
+      username,
       password,
     };
+    console.log(
+      'inside login handler post data : cred :' + JSON.stringify(cred)
+    );
+    const headers = { 'Content-Type': 'application/json' };
 
     await axios
-      .put(`http://localhost:9731/api/v1.0/tweets/${username}/forgot`, cred)
+      .post(Login_URL, cred, headers)
       .then((response) => {
-        alert(response.data.message);
-        nav('/');
+        console.log(response);
+        const accessToken = response?.data?.data?.accessToken;
+        setAuth({ username, accessToken });
+        console.log(auth);
+        navigate(from, { replace: true });
       })
       .catch((err) => {
-        let message = err.response.data.message;
-        let errors = err.response.data.errors;
-        let pretty = `${message}\n`;
-        for (const property in errors) {
-          pretty = pretty.concat(`\t${errors[property]}\n`);
+        if (err.response.data) {
+          let message = err.response.data.message;
+          let errors = err.response.data.errors;
+          let pretty = `${message}\n`;
+          for (const property in errors) {
+            pretty = pretty.concat(`\t${errors[property]}\n`);
+          }
+          setUserName('');
+          setPassword('');
+          alert(pretty);
+        } else {
+          alert(err.message + ' Try again after some time');
         }
-        setUserName('');
-        setPassword('');
-        alert(pretty);
       });
   };
 
@@ -73,9 +91,6 @@ const ForgotPassword = () => {
         <div className='col-6'>
           <form action='' method='POST'>
             <fieldset className='ml-auto'>
-              <div id='legend' className=''>
-                <legend className=''>Forgot Password</legend>
-              </div>
               <div className='mb-2'>
                 <label htmlFor='InputFirstname' className='form-label'>
                   Username
@@ -111,10 +126,14 @@ const ForgotPassword = () => {
               <button
                 className='btn btn-success mx-auto'
                 type='submit'
-                onClick={onSubmitHandler}
+                onClick={onLoginHandler}
                 disabled={disabled}>
-                Change password
+                Login
               </button>
+              <br />
+              <Link to='/forgotpassword' className='link-primary  mt-2'>
+                Forgot password !
+              </Link>
             </fieldset>
           </form>
         </div>
@@ -123,4 +142,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default Login;

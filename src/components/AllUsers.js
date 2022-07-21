@@ -1,23 +1,29 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import useAxiosPrivate from '../Hooks/useAxiosPrivate';
+
+import useRefreshToken from './../Hooks/useRefreshToken';
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
-  const nav = useNavigate();
-  useEffect(() => {
-    const token = sessionStorage.getItem('$myToken$');
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
+  const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const refresh = useRefreshToken();
 
-    if (token) {
-      axios
-        .get(`http://localhost:9731/api/v1.0/tweets/users/all`, { headers })
-        .then((response) => setUsers(response.data.data))
+  useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const getUsers = async () => {
+      await axiosPrivate
+        .get(`/api/v1.0/tweets/users/all`, {
+          signal: controller.signal,
+        })
+        .then((response) => isMounted && setUsers(response.data.data))
         .catch((err) => {
           if (err.response.status === 403) {
             alert('Login required to view this page, Please Login');
-            nav('/');
+            navigate('/login', { state: { from: location }, replace: true });
           } else {
             if (err.response.data) {
               let message = err.response.data.message;
@@ -26,18 +32,19 @@ const AllUsers = () => {
               for (const property in errors) {
                 pretty = pretty.concat(`\t${errors[property]}\n`);
               }
-
               alert(pretty);
             } else {
               alert(err.message + ' Try again after some time');
             }
           }
         });
-    } else {
-      alert('Login required to view All Users, Please Login');
-      nav('/');
-    }
-  }, [nav]);
+    };
+    getUsers();
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [location, navigate, axiosPrivate]);
   return (
     <>
       <div className='container my-5'>
@@ -66,6 +73,9 @@ const AllUsers = () => {
           </div>
         </div>
       </div>
+      <button className='btn btn-success' onClick={refresh}>
+        Refresh
+      </button>
     </>
   );
 };

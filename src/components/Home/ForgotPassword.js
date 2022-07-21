@@ -1,9 +1,9 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Login = ({ setIsLoggedIn }) => {
+const ForgotPassword = () => {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [disabled, setDisabled] = useState(true);
@@ -40,37 +40,30 @@ const Login = ({ setIsLoggedIn }) => {
   };
   useEffect(() => {
     setDisabled(!(isValidUser.valid && isValidPassword.valid));
-  }, [isValidUser, isValidPassword]);
+  }, [isValidUser, isValidPassword, disabled]);
 
-  const onLoginHandler = async (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
     const cred = {
-      username,
       password,
     };
 
     await axios
-      .post('http://localhost:9731/api/v1.0/tweets/login', cred)
+      .put(`http://localhost:9731/api/v1.0/tweets/${username}/forgot`, cred)
       .then((response) => {
-        sessionStorage.setItem('$myToken$', response.data.data.authToken);
-        sessionStorage.setItem('username', response.data.data.email);
-        setIsLoggedIn(true);
-        nav('/home');
+        alert(response.data.message);
+        nav('/');
       })
       .catch((err) => {
-        if (err.response.data) {
-          let message = err.response.data.message;
-          let errors = err.response.data.errors;
-          let pretty = `${message}\n`;
-          for (const property in errors) {
-            pretty = pretty.concat(`\t${errors[property]}\n`);
-          }
-          setUserName('');
-          setPassword('');
-          alert(pretty);
-        } else {
-          alert(err.message + ' Try again after some time');
+        let message = err.response.data.message;
+        let errors = err.response.data.errors;
+        let pretty = `${message}\n`;
+        for (const property in errors) {
+          pretty = pretty.concat(`\t${errors[property]}\n`);
         }
+        setUserName('');
+        setPassword('');
+        alert(pretty);
       });
   };
 
@@ -80,6 +73,9 @@ const Login = ({ setIsLoggedIn }) => {
         <div className='col-6'>
           <form action='' method='POST'>
             <fieldset className='ml-auto'>
+              <div id='legend' className=''>
+                <legend className=''>Forgot Password</legend>
+              </div>
               <div className='mb-2'>
                 <label htmlFor='InputFirstname' className='form-label'>
                   Username
@@ -111,18 +107,14 @@ const Login = ({ setIsLoggedIn }) => {
                   required
                 />
                 {!isValidPassword.valid && isValidPassword.text}
-              </div>
+              </div> 
               <button
                 className='btn btn-success mx-auto'
                 type='submit'
-                onClick={onLoginHandler}
+                onClick={onSubmitHandler}
                 disabled={disabled}>
-                Login
+                Change password
               </button>
-              <br />
-              <Link to='/forgotpassword' className='link-primary  mt-2'>
-                Forgot password !
-              </Link>
             </fieldset>
           </form>
         </div>
@@ -131,4 +123,4 @@ const Login = ({ setIsLoggedIn }) => {
   );
 };
 
-export default Login;
+export default ForgotPassword;

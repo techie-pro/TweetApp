@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Tweet from './Tweet';
+import Tweet from './Tweet/Tweet';
 
 const Tweets = ({ tweets }) => {
   const [tweetList, setTweetList] = useState([]);
