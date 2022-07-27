@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Tweets from "./Tweets";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../Constants";
 
 const Form = ({ initial }) => {
   const [text, setText] = useState("");
@@ -48,7 +49,7 @@ const Form = ({ initial }) => {
     };
     const username = sessionStorage.getItem("username");
     axios
-      .post(`http://localhost:9731/api/v1.0/tweets/${username}/add`, request, {
+      .post(`${API_URL}/api/v1.0/tweets/${username}/add`, request, {
         headers,
       })
       .then((response) => addTweet(response.data.data && response.data.data))

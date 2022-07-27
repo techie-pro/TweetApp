@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Form from "./Form";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../Constants";
 const HomePage = () => {
   const [tweets, setTweets] = useState([]);
 
@@ -17,7 +18,7 @@ const HomePage = () => {
 
     if (token) {
       axios
-        .get(`http://localhost:9731/api/v1.0/tweets/all`, { headers })
+        .get(`${API_URL}/api/v1.0/tweets/all`, { headers })
         .then((response) => {
           response.data.data && setTweets(response.data.data);
         })

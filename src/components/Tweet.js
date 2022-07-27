@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Reply from "./Reply";
 import ReplyModal from "./ReplyModal";
 import { BsSuitHeart } from "react-icons/bs";
+import { API_URL } from "../Constants";
 const Tweet = ({ tweet, deleteTweet }) => {
   const nav = useNavigate();
   const [isEdit, setIsEdit] = useState(false);
@@ -120,13 +121,9 @@ const Tweet = ({ tweet, deleteTweet }) => {
       likes: likes,
     };
     axios
-      .put(
-        `http://localhost:9731/api/v1.0/tweets/${username}/like/${tweet.id}`,
-        body,
-        {
-          headers,
-        }
-      )
+      .put(`${API_URL}/api/v1.0/tweets/${username}/like/${tweet.id}`, body, {
+        headers,
+      })
       .then((response) => {
         if (response.status === 200) {
           setLikes(response.data.data.likes);
